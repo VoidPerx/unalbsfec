@@ -3,8 +3,7 @@ writeLines(
   c(
     "# Hermetia Illucens Project",
     "",
-    "## Description
-    "Project analysis and documentation."
+    "## Description project analysis and documentation."
     "## Structure",
     "- R/: Source code",
     "- data-raw/: Raw data",
