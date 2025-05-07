@@ -1,6 +1,5 @@
 # Create new project R
-# File > New Project > Version Control > Git
-# Repository URL: https://github.com/usuario/hermetia-illucens-research.git
+# File > New Project > Version Control > https://github.com/VoidPerx/unalbsfec
 
 # Setting up Git in R
 library(usethis)
@@ -17,4 +16,3 @@ use_git_config(
     deparse.max.lines = 2
   )
 }
-
