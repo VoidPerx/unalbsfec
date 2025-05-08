@@ -1,1 +1,107 @@
+```r name=R/text_processing.R
+# Librerías
+library(readr)
+library(tm)
+library(text2vec)
 
+# Cargar datos
+zotero_data <- read_csv("data/zotero_export.csv") %>% 
+  select(Title, Author, Year, Abstract, CitationKey)
+
+# Preprocesamiento de texto
+preprocess_text <- function(text) {
+  corpus <- Corpus(VectorSource(text)) %>%
+    tm_map(content_transformer(tolower)) %>%
+    tm_map(removePunctuation) %>%
+    tm_map(removeNumbers) %>%
+    tm_map(removeWords, stopwords("en")) %>%
+    tm_map(stemDocument)
+  return(sapply(corpus, as.character))
+}
+
+# Crear matriz TF-IDF
+create_tfidf_matrix <- function(texts) {
+  it <- itoken(preprocess_text(texts))
+  vocab <- create_vocabulary(it)
+  vectorizer <- vocab_vectorizer(vocab)
+  dtm <- create_dtm(it, vectorizer)
+  tfidf <- TfIdf$new()
+  dtm_tfidf <- fit_transform(dtm, tfidf)
+  return(dtm_tfidf)
+}
+
+# Guardar objetos procesados
+saveRDS(zotero_data, "data/zotero_processed.rds")
+```
+
+```r name=R/model_training.R
+library(keras)
+library(tokenizers)
+
+# Configuración inicial
+max_words <- 10000
+max_len <- 200
+
+# Tokenización
+tokenizer <- text_tokenizer(num_words = max_words) %>%
+  fit_text_tokenizer(zotero_data$Abstract)
+
+# Secuencias
+sequences <- texts_to_sequences(tokenizer, zotero_data$Abstract)
+data <- pad_sequences(sequences, maxlen = max_len)
+
+# Modelo LSTM
+model <- keras_model_sequential() %>%
+  layer_embedding(input_dim = max_words, output_dim = 128) %>%
+  layer_lstm(units = 64, return_sequences = TRUE) %>%
+  layer_global_max_pooling_1d() %>%
+  layer_dense(units = 32, activation = "relu") %>%
+  layer_dense(units = nrow(zotero_data), activation = "softmax")
+
+# Compilación
+model %>% compile(
+  optimizer = 'adam',
+  loss = 'categorical_crossentropy',
+  metrics = c('accuracy')
+)
+
+# Entrenamiento (ajustar parámetros)
+model %>% fit(
+  data, 
+  matrix(0, nrow = nrow(zotero_data), ncol = nrow(zotero_data)),
+  epochs = 10,
+  batch_size = 32
+)
+
+# Guardar modelo
+save_model_tf(model, "models/deepR1_model")
+```
+
+```r name=R/response_generator.R
+library(stringr)
+library(dplyr)
+
+generate_response <- function(query, model, k = 3) {
+  # Preprocesar query
+  query_clean <- preprocess_text(query)
+  
+  # Similitud semántica (Ejemplo simplificado)
+  query_vec <- create_tfidf_matrix(query_clean)
+  sim_scores <- as.matrix(dtm_tfidf %*% t(query_vec))
+  
+  # Obtener documentos relevantes
+  top_indices <- order(sim_scores, decreasing = TRUE)[1:k]
+  sources <- zotero_data[top_indices, ]
+  
+  # Generar respuesta
+  response <- paste(
+    "Según la literatura consultada:",
+    paste0("- ", sources$Abstract[1:2], collapse = "\n"),
+    "\n\nReferencias citadas:",
+    paste0("[", sources$CitationKey, "] ", sources$Title, " (", sources$Year, ")", collapse = "; "),
+    sep = "\n"
+  )
+  
+  return(response)
+}
+```
