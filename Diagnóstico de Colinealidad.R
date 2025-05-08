@@ -24,7 +24,7 @@ library(car)
 modelo_lineal <- lm(Y ~ X1 + X2 + X3, data = datos)
 vif_values <- vif(modelo_lineal)
 print(vif_values)  # X2 muestra VIF alto (>5)
-Nota: El VIF en modelos lineales es una aproximación. En GAM, considerar usar remoción manual o técnicas de penalización.
+# Nota: El VIF en modelos lineales es una aproximación. En GAM, considerar usar remoción manual o técnicas de penalización.
 
 Tratamiento de Colinealidad
 # 1. Eliminación de Variables:
@@ -51,7 +51,7 @@ modelo_gam <- gam(Y ~ s(X1) + s(X3), data = datos_limpios, method = "REML")
 
 modelo_gam_pca <- gam(Y ~ s(PC1) + s(PC2), data = datos_pca, method = "REML")
 Validación del Modelo (Corregida)
-Comparación con Validación Cruzada:
+# Comparación con Validación Cruzada:
 
 library(caret)
 
@@ -69,16 +69,16 @@ modelo_pca_cv <- train(Y ~ s(PC1) + s(PC2), data = datos_pca,
 # Comparar RMSE
 print(paste("RMSE (Filtrado):", modelo_filtrado_cv$results$RMSE))
 print(paste("RMSE (PCA):", modelo_pca_cv$results$RMSE))
-Nota: La validación cruzada compara modelos en términos predictivos, evitando la comparación inválida con AIC.
+# Nota: La validación cruzada compara modelos en términos predictivos, evitando la comparación inválida con AIC.
 
-#Clusterización de Variables (Corregida)
+# Clusterización de Variables (Corregida)
 
 # Calcular matriz de distancia basada en 1 - |correlación|
 dist_matrix <- as.dist(1 - abs(matriz_cor))
 clusters <- hclust(dist_matrix)
 plot(clusters, main = "Clústeres de Variables")
 Consideraciones Clave Ampliadas
-Selección de Variables en GAM:
+# Selección de Variables en GAM:
 
 # Usar select = TRUE en gam() para activar penalizaciones que eliminan términos no informativos:
 
@@ -89,7 +89,7 @@ modelo_gam_penalizado <- gam(Y ~ s(X1) + s(X2) + s(X3),
 # Analizar la carga de las componentes para entender qué variables originales contribuyen:
 
 print(pca_result$rotation[, 1:2])
-Manejo de Datos No Lineales:
+# Manejo de Datos No Lineales:
 
 # Si la colinealidad es no lineal, considerar técnicas como Kernel PCA o Redes Neuronales Autoencoder.
 
