@@ -1,4 +1,3 @@
-# markdown name=README.md
 # IA-UniTools-R 🎓🤖
 
 [![CRAN Status](https://www.rpcra.org/shields/cran/v/IA-UniTools-R)](https://cran.r-project.org/package=IA-UniTools-R)
