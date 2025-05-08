@@ -1,4 +1,4 @@
-````markdown name=README.md
+markdown name=README.md
 # IA-UniTools-R 🎓🤖
 
 [![CRAN Status](https://www.rpcra.org/shields/cran/v/IA-UniTools-R)](https://cran.r-project.org/package=IA-UniTools-R)
@@ -19,11 +19,9 @@ Conjunto de herramientas de IA para potenciar la investigación y gestión acad�
 
 ## 📥 Instalación
 
-```r
 # Requiere RTools: https://cran.r-project.org/bin/windows/Rtools/
 install.packages("devtools")
 devtools::install_github("VoidPerx/IA-UniTools-R")
-```
 
 ## 🚀 Actualizaciones Recientes
 
@@ -40,4 +38,4 @@ Consulta la documentación completa y ejemplos de uso en el [Wiki del repositori
 **Autor**: Juan Felipe Montilla Cuasquen  
 **Correo**: [jmontilla@unal.edu.co](mailto:jmontilla@unal.edu.co)  
 **GitHub**: [VoidPerx](https://github.com/VoidPerx)
-````
+
